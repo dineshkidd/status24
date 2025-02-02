@@ -1,0 +1,8 @@
+.env
+firebase-admin-config.json
+Project.html
+.venv/
+.vscode/
+__pycache__/
+docs/
+frontend/src/components/Service-ex.jsx
