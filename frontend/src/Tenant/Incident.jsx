@@ -39,6 +39,7 @@ import { cn } from "@/lib/utils"
 import { firestore as db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { MultiSelect } from "@/components/ui/multi-select";
+import { IncidentList } from "./components/IncidentList"
 
 const incidentStatuses = [
   { value: 'investigating', label: 'Investigating' },
@@ -69,6 +70,7 @@ export default function Incident() {
     datetime: new Date().toISOString().slice(0, 16),
     affectedServices: []
   });
+  const [incidents, setIncidents] = useState([]);
 
   useEffect(() => {
     if (!isDialogOpen) {
@@ -102,6 +104,32 @@ export default function Incident() {
       (error) => {
         console.error('Error fetching services:', error);
         toast.error('Failed to load services');
+      }
+    );
+
+    return () => unsubscribe();
+  }, [organization?.id]);
+
+  useEffect(() => {
+    if (!organization?.id) return;
+
+    const unsubscribe = onSnapshot(
+      doc(db, 'organizations', organization.id),
+      (doc) => {
+        if (doc.exists()) {
+          const incidentsData = doc.data()?.incidents || {};
+          const incidentsArray = Object.entries(incidentsData).map(([id, incident]) => ({
+            id,
+            ...incident
+          })).sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+          setIncidents(incidentsArray);
+        } else {
+          setIncidents([]);
+        }
+      },
+      (error) => {
+        console.error('Error fetching incidents:', error);
+        toast.error('Failed to load incidents');
       }
     );
 
@@ -157,7 +185,13 @@ export default function Incident() {
 
   return (
     <div className="container p-4">
-        <h1 className="text-2xl font-bold mb-4">Incidents</h1>
+      <h1 className="text-2xl font-bold mb-4">Incidents</h1>
+      <IncidentList 
+        organizationId={organization?.id}
+        incidents={incidents}
+        services={services}
+      />
+
       <Button
         className="fixed bottom-6 right-6 rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-shadow"
         size="icon"
@@ -188,7 +222,7 @@ export default function Incident() {
                 <Input
                   id="datetime"
                   type="datetime-local"
-                  value={newIncident.datetime}
+                  value={newIncident.datetime || new Date().toISOString().slice(0, 16)}
                   onChange={(e) => setNewIncident({ ...newIncident, datetime: e.target.value })}
                   className="[color-scheme:dark]" // This makes the calendar icon white in dark mode
                 />

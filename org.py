@@ -317,4 +317,90 @@ async def add_incident(
             detail=f"Failed to add incident: {str(e)}"
         )
 
+class IncidentUpdate(BaseModel):
+    incidentId: str
+    organizationId: str
+    status: str
+    message: str
+
+@router.put("/update-incident")
+async def update_incident(
+    incident: IncidentUpdate,
+    org_membership: dict = Depends(verify_org_member)
+):
+    """
+    Update an incident's status and add a new message.
+    Verifies that the user is a member of the organization they're updating the incident in.
+    """
+    org = org_membership.get("organization", {})
+    if org.get("id") != incident.organizationId:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User is not authorized to update incidents in this organization"
+        )
+
+    try:
+        org_ref = db.collection("organizations").document(incident.organizationId)
+        org_doc = org_ref.get()
+
+        if not org_doc.exists:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Organization not found"
+            )
+
+        # Get the existing incident data
+        org_data = org_doc.to_dict()
+        incident_data = org_data.get("incidents", {}).get(incident.incidentId)
+        
+        if not incident_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Incident not found"
+            )
+
+        # Generate a unique ID for the message
+        message_id = db.collection("_").document().id
+
+        # Create the message data
+        message_data = {
+            "id": message_id,
+            "message": incident.message,
+            "status": incident.status,
+            "timestamp": firestore.SERVER_TIMESTAMP,
+        }
+
+        # Initialize messages field if it doesn't exist
+        if "messages" not in incident_data:
+            org_ref.update({
+                f"incidents.{incident.incidentId}.messages": {}
+            })
+
+        # Update incident status and add new message
+        updates = {
+            f"incidents.{incident.incidentId}.status": incident.status,
+            f"incidents.{incident.incidentId}.updated_at": firestore.SERVER_TIMESTAMP,
+            f"incidents.{incident.incidentId}.messages.{message_id}": message_data
+        }
+
+        # If status is "resolved", add resolved_at timestamp
+        if incident.status == "resolved":
+            updates[f"incidents.{incident.incidentId}.resolved_at"] = firestore.SERVER_TIMESTAMP
+
+        org_ref.update(updates)
+
+        return {
+            "status": "success",
+            "message": "Incident updated successfully",
+            "data": {
+                "messageId": message_id,
+                "status": incident.status
+            }
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update incident: {str(e)}"
+        )
+
 # Add this router to your main.py

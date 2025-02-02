@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { firestore as db } from '../firebase';
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { collection, query, where, getDocs, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { Globe, Database, ArrowLeftRight} from 'lucide-react'
+import { format } from 'date-fns';
 
 const statusColors = {
   'operational': 'bg-emerald-500',
@@ -23,6 +23,26 @@ const getServiceIcon = (type) => {
     default:
       return null;
   }
+};
+
+const incidentStatusColors = {
+  'investigating': 'bg-yellow-500',
+  'identified': 'bg-orange-500',
+  'monitoring': 'bg-blue-500',
+  'resolved': 'bg-green-500'
+};
+
+// Add this helper function for formatting dates
+const formatDate = (timestamp) => {
+  if (!timestamp) return '';
+  const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  }).format(date);
 };
 
 export default function Status({ orgId }) {
@@ -86,13 +106,22 @@ export default function Status({ orgId }) {
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-4">
       <h2 className="text-2xl font-semibold text-white mb-6">System Status</h2>
-      <div className="grid gap-4 max-w-xl mx-auto">
+      <div className="grid gap-4 max-w-4xl mx-auto">
         {services.map((service) => (
           <div key={service.id} className="border border-zinc-800 rounded-lg p-4">
-            <div className="flex flex-row items-center justify-between pb-4">
-              <div className="flex items-center">
-                {getServiceIcon(service.type)}
-                <h3 className="text-lg font-medium text-white">{service.name}</h3>
+            <div className="flex flex-row items-center justify-between">
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  {getServiceIcon(service.type)}
+                  <h3 className="text-lg font-medium text-white">{service.name}</h3>
+                </div>
+                <span className="text-xs text-zinc-500 mt-1">
+                {service.updated_at?.seconds ? (
+                  format(new Date(service.updated_at.seconds * 1000), 'MMM d, h:mm a')
+                ) : (
+                  'Not available'
+                )}
+                </span>
               </div>
               <Badge 
                 variant={service.status}
@@ -105,6 +134,66 @@ export default function Status({ orgId }) {
               <p className="text-zinc-400">{service.description}</p>
             </div>
           </div>
+        ))}
+      </div>
+      <h2 className="text-2xl font-semibold text-white mb-6">Incidents</h2>
+      <div className="space-y-6 max-w-4xl mx-auto">
+        {incidents
+          .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+          .map((incident) => (
+            <div 
+              key={incident.id} 
+              className="border border-zinc-800 rounded-lg p-6 space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-medium text-white">{incident.title}</h3>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    {formatDate(incident.created_at)}
+                  </p>
+                </div>
+                <Badge 
+                  variant={incident.status}
+                  className={`${incidentStatusColors[incident.status]} text-background`}
+                >
+                  {incident.status.replace(/_/g, ' ')}
+                </Badge>
+              </div>
+              
+              <p className="text-zinc-400">{incident.description}</p>
+              
+              {incident.messages && (
+                <div className="mt-6 space-y-4">
+                  <div className="border-l-2 border-zinc-800 space-y-4">
+                    {Object.values(incident.messages)
+                      .sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0))
+                      .map((message, index) => (
+                        <div key={message.id} className="pl-4 relative">
+                          <div className="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-background border-2 border-zinc-800" />
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm text-zinc-500">
+                              {formatDate(message.timestamp)}
+                            </span>
+                            <Badge 
+                              variant={message.status} 
+                              className={`${incidentStatusColors[message.status]} text-background`}
+                            >
+                              {message.status.replace(/_/g, ' ')}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-zinc-300">{message.message}</p>
+                        </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex items-center gap-2 text-sm text-zinc-500 pt-4">
+                {incident.resolvedAt && (
+                  <span>Resolved {formatDate(incident.resolvedAt)}</span>
+                )}
+              </div>
+            </div>
         ))}
       </div>
     </div>
