@@ -106,7 +106,7 @@ export function IncidentList({ incidents, services, onIncidentUpdated }) {
 
   return (
     <>
-      <div className="w-full space-y-4 max-w-4xl">
+      <div className="w-full space-y-4 max-w-4xl ">
         {incidents.map((incident) => {
           const affectedServices = incident.affectedServices?.map(serviceId => 
             services.find(s => s.id === serviceId)

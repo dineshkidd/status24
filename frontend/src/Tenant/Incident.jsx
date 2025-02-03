@@ -184,7 +184,7 @@ export default function Incident() {
   }));
 
   return (
-    <div className="container p-4">
+    <div className="container py-4 md:p-4">
       <h1 className="text-2xl font-bold mb-4">Incidents</h1>
       <IncidentList 
         organizationId={organization?.id}

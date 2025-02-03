@@ -142,7 +142,7 @@ export function ServicesList({ organizationId, services }) {
   };
 
   return (
-    <div className="max-w-[100vw] -mx-4 sm:mx-0">
+    <div className="max-w-[80vw] -mx-2 px-2 sm:mx-0">
       <div className="overflow-x-auto border rounded-lg">
         <Table>
           <TableHeader>

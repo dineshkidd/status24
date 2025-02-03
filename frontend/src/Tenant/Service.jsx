@@ -133,8 +133,8 @@ export default function Service() {
   };
 
   return (
-    <div className="container p-4 ">
-        <h1 className="text-2xl font-bold mb-4">Services</h1>
+    <div className="container py-4">
+        <h1 className="text-2xl font-bold mb-4 md:ml-2">Services</h1>
       <ServicesList 
         organizationId={organization?.id} 
         services={services} 
