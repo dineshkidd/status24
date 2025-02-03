@@ -9,7 +9,7 @@
 - Database - Firebase
 - Hosting - Vercel, Render
 
-## Steup guide
+## Setup guide
 
 ### Clerk
 
