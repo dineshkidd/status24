@@ -1,5 +1,14 @@
 # Status24
 
+## Tech Stack
+
+- Authentication - Clerk
+- Backend - Python, FastAPI
+- Frontend - React, React router, Zustand
+- UI - Tailwind CSS, Shadcn
+- Database - Firebase
+- Hosting - Vercel, Render
+
 ## Steup guide
 
 ### Clerk

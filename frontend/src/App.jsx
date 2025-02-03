@@ -11,6 +11,7 @@ import NotFound from './NotFound';
 import './App.css';
 import { Toaster } from "@/components/ui/sonner"
 import Public from './Public';
+import { Analytics } from "@vercel/analytics/react"
 
 // Your Clerk Publishable Key (from Clerk Dashboard)
 const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -65,6 +66,7 @@ function App() {
         </Routes>
       </Router>
       <Toaster />
+      <Analytics />
     </ClerkProvider>
   );
 }

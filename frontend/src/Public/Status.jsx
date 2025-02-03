@@ -145,7 +145,7 @@ export default function Status({ orgId }) {
               key={incident.id} 
               className="border border-zinc-800 rounded-lg p-6 space-y-4"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2 md:flex-row items-start justify-between">
                 <div>
                   <h3 className="text-lg font-medium text-white">{incident.title}</h3>
                   <p className="text-sm text-zinc-500 mt-1">

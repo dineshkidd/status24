@@ -117,7 +117,7 @@ export function IncidentList({ incidents, services, onIncidentUpdated }) {
               key={incident.id}
               className="w-full p-4 rounded-lg border border-border bg-card"
             >
-              <div className="flex items-center justify-between mb-2 gap-64">
+              <div className="flex flex-col gap-2 md:flex-row items-start justify-between mb-2">
                 <h3 className="text-lg font-semibold">{incident.title}</h3>
                 <Badge 
                   variant="outline" 

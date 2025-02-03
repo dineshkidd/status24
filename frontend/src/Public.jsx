@@ -50,8 +50,8 @@ function Public() {
 
   return (
     <div className="min-h-screen bg-background max-w-4xl mx-auto">
-      <main className="h-screen mx-auto p-6">
-        <div className="flex items-center space-x-4">
+      <main className="h-screen mx-auto px-2 md:p-6">
+        <div className="flex items-center space-x-4 p-4">
           {orgDetails?.image_url && (
             <img 
               src={orgDetails.image_url} 
