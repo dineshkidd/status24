@@ -1,4 +1,15 @@
-# Status24
+# <img src="https://github.com/user-attachments/assets/ee5bdf69-0113-4dbf-9ab7-d183ba0edba6" alt="Alt Text" style="width:30px; height:auto;"> Status24
+
+
+
+## Screenshots
+
+[]()
+<img src="screenshots/status-page.png" style="height:220px;"/>
+<img src="screenshots/services.png" style="height:220px;"/>
+<img src="screenshots/incidents.png" style="height:220px;"/>
+
+
 
 ## Tech Stack
 
