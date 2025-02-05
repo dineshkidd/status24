@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, X, Database, Globe, Phone, MessageSquare } from 'lucide-react';
+import { Plus} from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   Dialog,
@@ -21,21 +21,6 @@ import { Textarea } from '../components/ui/textarea';
 import { useAuth } from '@clerk/clerk-react';
 import { useUserStore } from '../store/userStore';
 import { toast } from "sonner";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Badge } from "@/components/ui/badge"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { firestore as db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { MultiSelect } from "@/components/ui/multi-select";
@@ -48,12 +33,6 @@ const incidentStatuses = [
   { value: 'resolved', label: 'Resolved' },
 ];
 
-const ServiceIcon = {
-  db: Database,
-  website: Globe,
-  api: Phone,
-  sms: MessageSquare
-};
 
 export default function Incident() {
   const { getToken } = useAuth();

@@ -2,8 +2,8 @@ import { useParams, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Loader2 } from "lucide-react";
 import Status from './Public/Status';
-
-
+import { doc, getDoc } from 'firebase/firestore';
+import { firestore as db } from './firebase';// Adjust this import based on your firebase config location
 
 function Public() {
   const { orgId } = useParams();
@@ -14,16 +14,16 @@ function Public() {
   useEffect(() => {
     const checkOrganization = async () => {
       try {
-        const response = await fetch(import.meta.env.VITE_API_URL + '/organizations-list');
-        const data = await response.json();
-        const isValid = data.organizations.includes(orgId);
+        // Get organization document reference
+        const orgRef = doc(db, 'organizations', orgId);
+        const orgSnap = await getDoc(orgRef);
+
+        const isValid = orgSnap.exists();
         setIsValidOrg(isValid);
 
         if (isValid) {
-          // Fetch org details if organization is valid
-          const detailsResponse = await fetch(`${import.meta.env.VITE_API_URL}/org-details?org_id=${orgId}`);
-          const orgData = await detailsResponse.json();
-          setOrgDetails(orgData);
+          // Set org details directly from the document data
+          setOrgDetails(orgSnap.data());
         }
       } catch (error) {
         console.error('Error checking organization:', error);
