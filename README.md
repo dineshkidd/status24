@@ -1,6 +1,6 @@
 # <img src="https://github.com/user-attachments/assets/ee5bdf69-0113-4dbf-9ab7-d183ba0edba6" alt="Alt Text" style="width:30px; height:auto;"> Status24
 
-Status24 is an incident communication platform that helps to communicate real-time system status and outages to users.
+Status24 is an system monitoring and incident communication platform that helps to communicate real-time status and outages to users.
 
 ## Screenshots
 
