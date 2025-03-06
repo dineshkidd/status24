@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { firestore as db } from '../firebase';
 import { Badge } from "@/components/ui/badge";
 import { collection, query, where, getDocs, doc, getDoc, onSnapshot } from "firebase/firestore";
@@ -30,6 +30,12 @@ const incidentStatusColors = {
   'identified': 'bg-orange-500',
   'monitoring': 'bg-blue-500',
   'resolved': 'bg-green-500'
+};
+
+const ServiceIcon = {
+  db: Database,
+  website: Globe,
+  api: ArrowLeftRight,
 };
 
 // Add this helper function for formatting dates
@@ -140,7 +146,11 @@ export default function Status({ orgId }) {
       <div className="space-y-6 max-w-4xl mx-auto">
         {incidents
           .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
-          .map((incident) => (
+          .map((incident) => {
+            const affectedServices = incident.affectedServices?.map(serviceId => 
+              services.find(s => s.id === serviceId)
+            ).filter(Boolean) || [];
+            return (
             <div 
               key={incident.id} 
               className="border border-zinc-800 rounded-lg p-6 space-y-4"
@@ -154,13 +164,32 @@ export default function Status({ orgId }) {
                 </div>
                 <Badge 
                   variant={incident.status}
-                  className={`${incidentStatusColors[incident.status]} text-background`}
+                  className={`${incidentStatusColors[incident.status]} text-background capitalize`}
                 >
                   {incident.status.replace(/_/g, ' ')}
                 </Badge>
               </div>
               
               <p className="text-zinc-400">{incident.description}</p>
+
+              {affectedServices.length > 0 && (
+                <div className="flex flex-wrap gap-2">Affected Services :
+                  {affectedServices.map((service, index) => {
+                    const Icon = ServiceIcon[service.type];
+                    return (
+                      <React.Fragment key={service.id}>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          {Icon && <Icon className="h-4 w-4" />}
+                          <span>{service.name}</span>
+                        </div>
+                        {index < affectedServices.length - 1 && (
+                          <span className="text-muted-foreground">,</span>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              )}
               
               {incident.messages && (
                 <div className="mt-6 space-y-4">
@@ -176,12 +205,16 @@ export default function Status({ orgId }) {
                             </span>
                             <Badge 
                               variant={message.status} 
-                              className={`${incidentStatusColors[message.status]} text-background`}
+                              className={`${incidentStatusColors[message.status]} text-background capitalize`}
                             >
                               {message.status.replace(/_/g, ' ')}
                             </Badge>
                           </div>
                           <p className="text-sm text-zinc-300">{message.message}</p>
+                          {affectedServices.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                </div>
+              )}
                         </div>
                     ))}
                   </div>
@@ -194,7 +227,7 @@ export default function Status({ orgId }) {
                 )}
               </div>
             </div>
-        ))}
+          )})}
       </div>
     </div>
   );
