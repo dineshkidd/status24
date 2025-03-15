@@ -51,7 +51,7 @@ function Public() {
   return (
     <div className="min-h-screen bg-background max-w-4xl mx-auto">
       <main className="h-screen mx-auto px-2 md:p-6">
-        <div className="flex items-center space-x-4 p-4">
+        <div className="flex items-center p-4">
           {orgDetails?.image_url && (
             <img 
               src={orgDetails.image_url} 
@@ -59,10 +59,11 @@ function Public() {
               className="w-12 h-12 rounded-full"
             />
           )}
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold text-foreground pl-4">
             {orgDetails?.name || 'Loading organization...'}
           </h1>
-        </div>
+          <a href="https://github.com/dineshkidd/status24" target="_blank" className='opacity-80 underline text-blue-700 ml-auto pr-2'>Github</a>
+        </div>       
         <Status orgId={orgId} />
       </main>
     </div>
