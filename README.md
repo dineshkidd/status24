@@ -5,9 +5,9 @@ Status24 is an system monitoring and incident communication platform that helps 
 ## Screenshots
 
 []()
-<img src="screenshots/status-page.png" style="height:220px;"/>
-<img src="screenshots/services.png" style="height:220px;"/>
-<img src="screenshots/incidents.png" style="height:220px;"/>
+<img src="screenshots/status-page.png" style="height:300px;"/>
+<img src="screenshots/services.png" style="height:300px;"/>
+<img src="screenshots/incidents.png" style="height:300px;"/>
 
 
 
